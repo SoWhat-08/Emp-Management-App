@@ -45,11 +45,18 @@ pipeline {
 
         stage('Deploy 3-Tier Application') {
             steps {
-                echo 'Deploying application...'
+                echo 'Removing old containers...'
 
-                sh 'docker compose down'
-                sh 'docker compose up -d'
-            }
+                sh '''
+                     docker rm -f employee-db employee-backend employee-frontend || true
+                '''
+
+                echo 'Building and starting 3-tier application...'
+
+                sh '''
+                   docker compose up -d --build
+                '''
+             }
         }
 
         stage('Verify Deployment') {
